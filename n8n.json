@@ -1,0 +1,1028 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "dados_consultores",
+          "mode": "list",
+          "cachedResultName": "dados_consultores"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "email",
+              "value": "={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1088,
+        -640
+      ],
+      "id": "1c004ff1-13d9-49a6-bf13-9437d6b18e1c",
+      "name": "UsersComEmail",
+      "credentials": {
+        "postgres": {
+          "id": "8srwwAsCf063gxTa",
+          "name": "numeros consultores"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1de1fd7e-2749-4e24-bb03-e5d234b44c0f",
+              "leftValue": "={{ $json.diferencaDias }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "7b1553c1-fc37-491f-a151-ee280e2ea1a9",
+              "leftValue": "={{ $('TratarDadosProjeto').item.json['archived?'] }}",
+              "rightValue": "={{false}}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2656,
+        -448
+      ],
+      "id": "87b39bd1-9297-4019-bfb6-c3ca14029f73",
+      "name": "Condição7Dias"
+    },
+    {
+      "parameters": {
+        "jsCode": "const agora = Math.floor(Date.now() / 1000);\n\nconst itens = $('TratarDadosProjeto').all();\n\nconst resultados = itens.map(item => {\n  const ultimaModString = item.json.ultimaMod;\n  const proximaAttString = item.json.ProximaAtividade;\n\n  const ultimaAtualizacao = Math.floor(new Date(ultimaModString).getTime() / 1000);\n  const nomeProjeto = item.json.nomeProjeto;\n  const contrato = item.json.contrato;\n  const diferencaSegundos = agora - ultimaAtualizacao;\n  const diferencaDias = diferencaSegundos / (60 * 60 * 24);\n\n  // Tratamento da ProximaAtividade, considerando null\n  let diferencaDiasAtv = null;\n  if (proximaAttString) {\n    const proxAttAtividade = Math.floor(new Date(proximaAttString).getTime() / 1000);\n    const diferencaSegAtv = agora - proxAttAtividade;\n    diferencaDiasAtv = Math.abs(diferencaSegAtv / (60 * 60 * 24)); // valor sempre positivo\n  }\n\n  return {\n    json: {\n      nomeProjeto,\n      contrato,\n      diferencaDias,\n      diferencaDiasAtv\n    }\n  };\n});\n\nreturn resultados;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2880,
+        -448
+      ],
+      "id": "8e1c20e4-da6f-42ac-ae97-c28fe24f62a0",
+      "name": "trataDatas"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "808d8818-f7b5-476b-abea-47136058edab",
+              "name": "nome",
+              "value": "={{ $json.firstName }}",
+              "type": "string"
+            },
+            {
+              "id": "c4416557-6925-48c9-9e64-0ded65b2f5bc",
+              "name": "sobrenome",
+              "value": "={{ $json.lastName }}",
+              "type": "string"
+            },
+            {
+              "id": "4679e526-50a8-40f9-9ce2-02bb8e2cd10e",
+              "name": "diferencaDias",
+              "value": "={{ $('trataDatas').item.json.diferencaDias }}",
+              "type": "string"
+            },
+            {
+              "id": "dec46e1d-bf2d-41af-aecb-b6acb73d32cc",
+              "name": "nomeProjeto",
+              "value": "={{ $('TratarDadosProjeto').item.json.nomeProjeto }}",
+              "type": "string"
+            },
+            {
+              "id": "04cfebe0-ac79-4a9d-9161-cdf43055d0de",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "5828ab59-4930-4871-a135-66ac0d1cdc40",
+              "name": "diferencaDiasAtv",
+              "value": "={{ $('trataDatas').item.json.diferencaDiasAtv }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1312,
+        -640
+      ],
+      "id": "12c2c8f1-cee7-4009-adfd-c376c9afc12d",
+      "name": "InfosUser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "311b8eef-983d-44c8-8ba0-0384a762f7f4",
+              "name": "Nome",
+              "value": "={{ $json.nome || $('Reserva').item.json.nomeReserva}}",
+              "type": "string"
+            },
+            {
+              "id": "d530ee80-214b-49ba-a480-3a8a0f6723e7",
+              "name": "contatoFinal",
+              "value": "={{ $json.contato || $('Reserva').item.json.contatoReserva}}",
+              "type": "string"
+            },
+            {
+              "id": "7d427a15-405a-479b-87e1-031a0e17d76c",
+              "name": "E-mail",
+              "value": "={{ $json.email || $json.emailReserva}}",
+              "type": "string"
+            },
+            {
+              "id": "a5383aea-965d-4dc5-90fb-4e288ae604d8",
+              "name": "diferencaDias",
+              "value": "={{ $('InfosUser').item.json.diferencaDias || $('InfosUserSemEmail').item.json.diferencaDias }}",
+              "type": "string"
+            },
+            {
+              "id": "aefb5296-d35b-4a78-bcb7-10ac2360d678",
+              "name": "nomeProjeto",
+              "value": "={{ $('trataDatas').item.json.nomeProjeto }}",
+              "type": "string"
+            },
+            {
+              "id": "a078676f-1c96-4418-b7a4-d48f7bf67ef4",
+              "name": "diferencaDiasAtv",
+              "value": "={{ $('InfosUser').item.json.diferencaDiasAtv }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -864,
+        -640
+      ],
+      "id": "e3737b78-2428-491d-a345-483a67e88e37",
+      "name": "Tratamento Final",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a929649e-1d2b-4655-803c-a0ffceaff531",
+              "name": "ultimaMod",
+              "value": "={{ $json.properties.hs_lastmodifieddate }}",
+              "type": "string"
+            },
+            {
+              "id": "1f9bb552-75b6-4688-9f10-29dedcdbee4b",
+              "name": "nomeProjeto",
+              "value": "={{ $('HubSpot - Buscar Projetos').item.json.properties.dealname }}",
+              "type": "string"
+            },
+            {
+              "id": "332a357b-85dc-4139-a774-9626e0c391cc",
+              "name": "agora",
+              "value": "={{$now}}",
+              "type": "string"
+            },
+            {
+              "id": "2f364db2-d0b2-4231-95cb-de19176a9f17",
+              "name": "consultorID",
+              "value": "={{ $json.properties.hubspot_owner_id }}",
+              "type": "string"
+            },
+            {
+              "id": "0825f7e6-18b7-4d78-bc49-993dbe49de64",
+              "name": "projetoFechado?",
+              "value": "={{ $json.archived }}",
+              "type": "string"
+            },
+            {
+              "id": "cf6cd329-420d-4637-b5c3-bd4db1e80fc5",
+              "name": "archived?",
+              "value": "={{ $json.archived }}",
+              "type": "string"
+            },
+            {
+              "id": "926c31d1-e48f-415b-b33d-79a111450402",
+              "name": "ProximaAtividade",
+              "value": "={{ $json.properties.notes_next_activity_date }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3104,
+        -448
+      ],
+      "id": "ed0e72a4-f5b7-4795-9474-e521d11137da",
+      "name": "TratarDadosProjeto"
+    },
+    {
+      "parameters": {
+        "jsCode": "const pendenciasPorConsultor = {};\n\nfor (const item of $input.all()) {\n  const { Nome, nomeProjeto, diferencaDias, 'E-mail': Email, contatoFinal } = item.json;\n\n  if (!pendenciasPorConsultor[Nome]) {\n    pendenciasPorConsultor[Nome] = {\n      nome: Nome,\n      contato: contatoFinal, // <-- usa contatoFinal corretamente aqui\n      email: Email,\n      projetos: []\n    };\n  }\n\n  pendenciasPorConsultor[Nome].projetos.push({\n    nomeProjeto,\n    diferencaDias: Number(diferencaDias).toFixed(0)\n  });\n}\n\nconst resultados = [];\n\nfor (const consultor of Object.values(pendenciasPorConsultor)) {\n  const { nome, projetos, contato, email } = consultor;\n\n  let mensagem = `👋 *Olá ${nome}!* Tudo certo?\\n\\n`;\n  mensagem += `Notamos que alguns dos seus projetos estão sem atualizações no HubSpot. Dá uma olhadinha neles pra gente? 😄👇\\n\\n`;\n\n  for (const p of projetos) {\n    mensagem += `📌 *${p.nomeProjeto}* — *${p.diferencaDias} dias* sem atualização.\\n`;\n  }\n\n  mensagem += `\\n🛠️ Lembrando que é importante atualizar os projetos no Hubspot. Consegue atualizar ainda hoje? \\n\\n`;\n  mensagem += `🚀 Contamos com você pra resolver isso o quanto antes!\\n\\n`;\n \n  mensagem += `**🚀**\\n\\n`;\n  mensagem += `**Automação Feita Com N8N**`;\n\n  resultados.push({\n    json: {\n      nome,\n      contato,\n      email,\n      mensagem\n    }\n  });\n}\n\nreturn resultados;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        -448
+      ],
+      "id": "a40531e4-7a05-417e-bb94-ba2c55d6070a",
+      "name": "Formata Mensagem"
+    },
+    {
+      "parameters": {
+        "authentication": "appToken",
+        "resource": "deal",
+        "operation": "search",
+        "returnAll": true,
+        "filterGroupsUi": {
+          "filterGroupsValues": [
+            {
+              "filtersUi": {
+                "filterValues": [
+                  {
+                    "propertyName": "hs_is_closed",
+                    "value": "={{ false }}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "properties": [
+            "consultor",
+            "dealname",
+            "hs_all_owner_ids",
+            "hubspot_owner_id",
+            "data_da_pr_xima_atividade",
+            "notes_next_activity_date"
+          ]
+        }
+      },
+      "id": "5acf687c-c9d1-4674-bab6-e9f9196d9ff1",
+      "name": "HubSpot - Buscar Projetos",
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2,
+      "position": [
+        -3328,
+        -448
+      ],
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "B4A4ejL6qoU6mnPt",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Pegar Dados da Deal (Projeto)",
+        "height": 260,
+        "width": 230
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3392,
+        -528
+      ],
+      "id": "1faebe2a-f5ff-43ae-b847-48a8141e162a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.hubapi.com/crm/v3/owners/{{ $('TratarDadosProjeto').item.json.consultorID }}\n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Insira seu BEARER TOKEN"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 100
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2432,
+        -544
+      ],
+      "id": "2c790957-94c5-45f5-9d97-e4034de74b23",
+      "name": "GETID",
+      "executeOnce": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -2432,
+        -352
+      ],
+      "id": "78373b67-7503-4877-830c-3a1a42499685",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "amount": 8
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1984,
+        -480
+      ],
+      "id": "98d9ea3c-4d21-4298-9b3d-97dfcd1bab30",
+      "name": "Wait1",
+      "webhookId": "e90d04fe-f219-4b07-a458-2ff76d3e1c1f",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.hubapi.com/crm/v3/owners/{{ $('TratarDadosProjeto').item.json.consultorID }}\n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Insira seu BEARER TOKEN"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 100
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1760,
+        -480
+      ],
+      "id": "b398f1eb-dd3d-44ce-938e-a36bd95d411f",
+      "name": "GETID2",
+      "executeOnce": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "21975e3f-021d-4be7-b6c3-af4dcd89ac4f",
+              "name": "nomeProjeto",
+              "value": "={{ $json.nomeProjeto }}",
+              "type": "string"
+            },
+            {
+              "id": "806d3f14-6591-46e9-8474-bd33d95a230f",
+              "name": "diferencaDias",
+              "value": "={{ $json.diferencaDias }}",
+              "type": "string"
+            },
+            {
+              "id": "0d23b752-7f58-4c0e-8f5d-c4db441d8fe1",
+              "name": "diferencaDiasAtv",
+              "value": "={{ $json.diferencaDiasAtv }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2208,
+        -480
+      ],
+      "id": "70bb09e3-d6a3-4958-8d39-6e389d0d25f6",
+      "name": "TentaNovamente"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        -432
+      ],
+      "id": "b2bb9aef-1fdf-4bf4-8f04-af3e612b6465",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1536,
+        -640
+      ],
+      "id": "9b725f5b-b765-49bc-ab49-763d21ec9057",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const proximasAtividadesPorConsultor = {};\n\nfor (const item of $input.all()) {\n  const { Nome, nomeProjeto, diferencaDiasAtv, 'E-mail': Email, contatoFinal } = item.json;\n\n  if (!proximasAtividadesPorConsultor[Nome]) {\n    proximasAtividadesPorConsultor[Nome] = {\n      nome: Nome,\n      contato: contatoFinal, // usa o número correto do consultor\n      email: Email,\n      projetos: []\n    };\n  }\n\n  proximasAtividadesPorConsultor[Nome].projetos.push({\n    nomeProjeto,\n    diasRestantes: Number(diferencaDiasAtv).toFixed(0)\n  });\n}\n\nconst resultados = [];\n\nfor (const consultor of Object.values(proximasAtividadesPorConsultor)) {\n  const { nome, projetos, contato, email } = consultor;\n\n  let mensagem = `👋 *Olá ${nome}!* Tudo certo?\\n\\n`;\n  mensagem += `⚠️ *Lembrete rápido*: os projetos abaixo têm *atividades próximas*. Dá uma conferida! 👇\\n\\n`;\n\n  for (const p of projetos) {\n    mensagem += `📌 *${p.nomeProjeto}* — em *${p.diasRestantes} dias*.\\n`;\n  }\n\n  mensagem += `\\n🗓️ Qualquer coisa, estamos por aqui!\\n\\n`;\n  mensagem += `🚀 *PWR Gestão*\\n🔶🚀🔷 Rumo aos 2 🌽🚀\\n\\n`;\n  mensagem += `*Automação PWR em testes*`;\n\n  resultados.push({\n    json: {\n      nome,\n      contato,\n      email,\n      mensagem\n    }\n  });\n}\n\nreturn resultados;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        -832
+      ],
+      "id": "c3a61b22-3471-47f6-9e72-416b75e45cb4",
+      "name": "Formata lembrete proxima atividade",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 15 * * 1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3552,
+        -448
+      ],
+      "id": "3719963f-b0a9-4fc2-9cf1-876a1b8eb6b3",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "abc0f87c-2d3b-4d5c-a85e-028bae72580c",
+              "leftValue": "={{ $('InfosUser').item.json.diferencaDiasAtv }}",
+              "rightValue": "={{ 0 || null}}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "dbbe9ffa-040c-43e2-bb2d-98fc6fc5c9fe",
+              "leftValue": "={{ $('InfosUser').item.json.diferencaDiasAtv }}",
+              "rightValue": "={{ 8 || null }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -640,
+        -640
+      ],
+      "id": "c5550317-6615-467f-9a82-d230b9d3320f",
+      "name": "temProxAtv?",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const itens = $('Formata lembrete proxima atividade').all();\n\nreturn itens.map(item => {\n  const nome = item.json.nome || '';\n  const mensagemBruta = item.json.mensagem || '';\n\n  const mensagemFormatada = mensagemBruta\n    .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')     // negrito com **\n    .replace(/\\*(.*?)\\*/g, '<i>$1</i>')         // itálico com *\n    .split('📌')                                // quebra por projetos\n    .map(bloco => `<p>${bloco.trim()}</p>`)     // aplica <p> por bloco\n    .join('\\n');\n\n  const htmlFinal = `\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\" />\n  <title>Lembrete de Atividades Próximas</title>\n</head>\n<body style=\"background-color: #ffffff; padding: 20px; font-family: Arial, sans-serif; color: #333;\">\n  <div style=\"max-width: 600px; margin: auto; border-radius: 8px; border: 1px solid #ddd; padding: 24px; text-align: left;\">\n    <h1 style=\"color: #1a73e8; font-size: 22px; font-weight: bold; margin-bottom: 20px;\">\n      Olá, ${nome} 🔶🚀🔷!\n    </h1>\n    <div style=\"font-size: 15px; line-height: 1.6;\">\n      ${mensagemFormatada}\n    </div>\n    <br>\n    <p style=\"font-size: 13px; color: #888; margin-top: 40px; text-align: center;\">\n      <b>PWR Gestão</b> 🔶🚀🔷<br>\n      <i>Automação em fase de testes</i>\n    </p>\n  </div>\n</body>\n</html>`.trim();\n\n  return {\n    json: {\n      nome,\n      htmlFinal\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        -832
+      ],
+      "id": "d114cf8b-8df8-4fb5-8518-9a0477b1f989",
+      "name": "formataHTML1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const itens = $('Formata Mensagem').all();\n\nreturn itens.map(item => {\n  const nome = item.json.nome || '';\n  const mensagemBruta = item.json.mensagem || '';\n\n  const mensagemFormatada = mensagemBruta\n    .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n    .replace(/\\*(.*?)\\*/g, '<i>$1</i>')\n    .split('📌')\n    .map(bloco => `<p>${bloco.trim()}</p>`)\n    .join('\\n');\n\n  const htmlFinal = `\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\" />\n  <title>Lembrete Hubspot</title>\n</head>\n<body style=\"background-color: #ffffff; padding: 20px; font-family: Arial, sans-serif; color: #333;\">\n  <div style=\"max-width: 600px; margin: auto; border-radius: 8px; border: 1px solid #ddd; padding: 24px; text-align: left;\">\n    <h1 style=\"color: #1a73e8; font-size: 22px; font-weight: bold; margin-bottom: 20px;\">\n      Olá, ${nome} 🔶🚀🔷!\n    </h1>\n    <div style=\"font-size: 15px; line-height: 1.6;\">\n      ${mensagemFormatada}\n    </div>\n    <br>\n    <p style=\"font-size: 13px; color: #888; margin-top: 40px; text-align: center;\">\n      <b>PWR Gestão</b> 🔶🚀🔷<br>\n      <i>Automação em fase de testes</i>\n    </p>\n  </div>\n</body>\n</html>`.trim();\n\n  return {\n    json: {\n      nome,\n      mensagemFormatada,\n      htmlFinal\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        -448
+      ],
+      "id": "b79e677d-9bcf-43a5-83bb-77e5a71b68db",
+      "name": "formataHTML"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Formata lembrete proxima atividade').item.json.email }}",
+        "subject": "Atualização HUBSPOT ⚠️🔶🔷",
+        "message": "={{ $json.htmlFinal }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        -832
+      ],
+      "id": "2a9cf9af-28d8-4bbb-a64f-4ef9529ee376",
+      "name": "lembrete",
+      "webhookId": "c7f7f3e4-9553-4b35-97ac-19356cc8052d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TKvgr1r0t8BTMmsc",
+          "name": "Automação"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "=POST",
+        "url": "nome da instancia EVOLUTION",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "INSIRA SUA CHAVE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.contato }}\",\n  \"text\":\"{{ $json.mensagem.replace(/\\n/g, '\\\\n').replace(/\\\"/g, '\\\\\"').trim() }}\"\n}   ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        64,
+        -448
+      ],
+      "id": "75ee6a66-a06e-44e6-aa35-ddce1178445a",
+      "name": "ProjetosDesatualizados",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "=POST",
+        "url": "=https://evo.cjautomatiza.com.br/message/sendText/Tiago Fialho",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "=SUA CHAVE API EVO"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.contato }}\",\n  \"text\":\"{{ $json.mensagem.replace(/\\n/g, '\\\\n').replace(/\\\"/g, '\\\\\"').trim() }}\"\n}   ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -192,
+        -832
+      ],
+      "id": "efada2f5-28a7-4800-90e8-a951d9895a8f",
+      "name": "MsgLembrete",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -640
+      ],
+      "id": "9e97624c-3839-4799-80b7-0cd09b17362e",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Formata Mensagem').item.json.email }}",
+        "subject": "Atualização HUBSPOT ⚠️🔶🔷",
+        "message": "={{ $json.htmlFinal }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        512,
+        -448
+      ],
+      "id": "b0140059-3fa5-4698-aa26-443b8a81e5ae",
+      "name": "Projetos desatualizados",
+      "webhookId": "c7f7f3e4-9553-4b35-97ac-19356cc8052d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TKvgr1r0t8BTMmsc",
+          "name": "Automação PWR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4033ca3a-4ed6-4b27-9291-332e27550ece",
+              "leftValue": "={{ $json.diferencaDiasAtv }}",
+              "rightValue": "={{ 0 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "1a81a7d9-46f9-41d3-afa3-7421f3f5261e",
+              "leftValue": "={{ $json.diferencaDiasAtv }}",
+              "rightValue": "={{ null }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        -544
+      ],
+      "id": "b5922777-7d50-4c80-b9ad-10aedeaa6d68",
+      "name": "DiferencaDiasAtv"
+    }
+  ],
+  "connections": {
+    "UsersComEmail": {
+      "main": [
+        [
+          {
+            "node": "Tratamento Final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Condição7Dias": {
+      "main": [
+        [
+          {
+            "node": "GETID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "trataDatas": {
+      "main": [
+        [
+          {
+            "node": "Condição7Dias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InfosUser": {
+      "main": [
+        [
+          {
+            "node": "UsersComEmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tratamento Final": {
+      "main": [
+        [
+          {
+            "node": "temProxAtv?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TratarDadosProjeto": {
+      "main": [
+        [
+          {
+            "node": "trataDatas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formata Mensagem": {
+      "main": [
+        [
+          {
+            "node": "ProjetosDesatualizados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot - Buscar Projetos": {
+      "main": [
+        [
+          {
+            "node": "TratarDadosProjeto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GETID": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "TentaNovamente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "GETID2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GETID2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TentaNovamente": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "InfosUser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formata lembrete proxima atividade": {
+      "main": [
+        [
+          {
+            "node": "MsgLembrete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HubSpot - Buscar Projetos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "temProxAtv?": {
+      "main": [
+        [
+          {
+            "node": "Formata lembrete proxima atividade",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DiferencaDiasAtv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "formataHTML1": {
+      "main": [
+        [
+          {
+            "node": "lembrete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "formataHTML": {
+      "main": [
+        [
+          {
+            "node": "Projetos desatualizados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ProjetosDesatualizados": {
+      "main": [
+        [
+          {
+            "node": "formataHTML",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "MsgLembrete": {
+      "main": [
+        [
+          {
+            "node": "formataHTML1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "DiferencaDiasAtv": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formata Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cee1905b7b548a96827c0044996b6517f93adfe72ade0e71a704dfc8848c0cb4"
+  }
+}
