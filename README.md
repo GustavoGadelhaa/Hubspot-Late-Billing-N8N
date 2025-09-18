@@ -41,3 +41,7 @@ Notamos que alguns dos seus projetos estão sem atualizações no HubSpot. Dá u
 🛠️ Lembrando que é importante atualizar os projetos no Hubspot. Consegue atualizar ainda hoje? 
 
 🚀 Contamos com você pra resolver isso o quanto antes!
+```
+
+# Mensagem Fomatada no E-mail (Usando HTML)
+![Exemplo de mensgame formatada G-mail](imagemHTML.png)
