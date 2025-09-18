@@ -8,7 +8,7 @@
 - **Gmail API**: Envio de e-mails.
 - **JavaScript**: Transformação de dados e formatação de mensagens.
 
----
+
 
 ## 🔄 Fluxo de Automação (resumido)
 
@@ -42,6 +42,37 @@ Notamos que alguns dos seus projetos estão sem atualizações no HubSpot. Dá u
 
 🚀 Contamos com você pra resolver isso o quanto antes!
 ```
+------
 
-# Mensagem Fomatada no E-mail (Usando HTML)
-![Exemplo de mensgame formatada G-mail](imagemHTML.png)
+## ✉️ Mensagem Fomatada no E-mail (Usando HTML)
+
+![Msg formatada G-mail](msgHTML.png)
+
+----------
+
+# 🛠️ Estrutura HTML:
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Lembrete de Projetos</title>
+</head>
+<body style="background-color: #ffffff; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+  <div style="max-width: 600px; margin: auto; border-radius: 8px; border: 1px solid #ddd; padding: 24px; text-align: left;">
+    <h1 style="color: #1a73e8; font-size: 22px; font-weight: bold; margin-bottom: 20px;">
+      Olá, João Silva! 👋
+    </h1>
+    <div style="font-size: 15px; line-height: 1.6;">
+      <p>Notamos que alguns dos seus projetos estão sem atualizações no HubSpot. Dá uma olhadinha neles pra gente? 😄👇</p>
+      <p>📌 <b>Projeto Alpha</b> — <b>34 dias</b> sem atualização.</p>
+      <p>📌 <b>Projeto Beta</b> — <b>56 dias</b> sem atualização.</p>
+      <p>🛠️ Lembrando que é importante atualizar os projetos no Hubspot. Consegue atualizar ainda hoje?</p>
+      <p>🚀 Contamos com você pra resolver isso o quanto antes!</p>
+    </div>
+  </div>
+</body>
+</html>
+```
+
