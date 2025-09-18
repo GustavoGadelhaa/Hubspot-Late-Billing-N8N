@@ -1,5 +1,12 @@
 # 🚀 Automação de Lembretes de Projetos
 
+
+### Descrição do fluxo de automação
+
+Este fluxo verifica projetos sem atualizações no HubSpot, organiza <br>os dados e envia lembretes automáticos via WhatsApp e e-mail.  
+Também alerta sobre próximas atividades agendadas no CRM,<br> informando quantos dias faltam.
+
+
 ## 🛠 Stacks Utilizadas
 - **n8n**: Orquestração de automações.  
 - **PostgreSQL**: Banco de dados.  
@@ -33,7 +40,7 @@
 
 ![Msg formatada WhatsApp](ImagemExemploWPP.png)
 
-> Se o consultor tiver próximas atividades com leads marcadas na agenda, a mensagem inclui um alerta com quantos dias faltam para cada atividade.
+
 
 ---
 
@@ -80,5 +87,5 @@
 </html>
 ```
 
-# Para as próximas atividades do consultor marcadas no CRM HubSpot, ele receberá o seguinte alerta, tanto no WhatsApp quanto no Gmail, com a estrutura:  
-# ![Exemplo de mensagem de alerta](msgHTML.png)
+## Para as próximas atividades do consultor marcadas no CRM HubSpot, ele receberá o seguinte alerta, tanto no WhatsApp quanto no Gmail, com a estrutura:  
+# ![Exemplo de mensagem de alerta](msgProximaATV.png)
