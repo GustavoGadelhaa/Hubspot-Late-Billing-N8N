@@ -30,19 +30,10 @@
 
 ## ✉️ Mensagem enviada (WhatsApp / E-mail)
 
-```markdown
-👋 *Olá João Silva!* Tudo certo?
-
-Notamos que alguns dos seus projetos estão sem atualizações no HubSpot. Dá uma olhadinha neles pra gente? 😄👇
-
-📌 *Projeto Alpha* — *34 dias* sem atualização.
-📌 *Projeto Beta* — *56 dias* sem atualização.
-
-🛠️ Lembrando que é importante atualizar os projetos no Hubspot. Consegue atualizar ainda hoje? 
-
-🚀 Contamos com você pra resolver isso o quanto antes!
-```
+![Msg formatada WhatsApp](ImagemExemploWPP.png)
 ------
+
+
 
 ## ✉️ Mensagem Fomatada no E-mail (Usando HTML)
 
